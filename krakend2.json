@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "port": 8000,
+  "endpoints": [
+    {
+      "endpoint": "/hello/{name}",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/hello/{name}",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://service:9000"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/private",
+      "method": "GET",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://service:9000/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/private",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://service:9000"
+          ]
+        }
+      ]
+    }
+  ]
+}
+

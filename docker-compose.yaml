@@ -1,0 +1,36 @@
+---
+version: "3.7"
+services:
+
+  krakend:
+    image: devopsfaith/krakend:1.2
+    container_name: krakend
+    ports:
+      - 8000:8000
+    volumes:
+    - ./krakend.json:/etc/krakend/krakend.json
+  
+  identity-service:
+    build:
+      context: ./identity-service
+    ports:
+    - 9005:9005
+    environment:
+    - SERVER_HOST=0.0.0.0
+    - SERVER_PORT=9005
+    - LOGGER_LEVEL=debug 
+    - JWT_VALIDATION_ENABLED=true
+    - JWT_PATHS_WHITELIST=/auth/register,/auth/login
+    - JWT_SECRET=verysecret
+    - JWT_EXP_SECS=86400
+    - JWT_ALGO=HS256
+
+  service:
+    build:
+      context: ./service
+    container_name: service
+    ports:
+    - 9000
+    environment:
+    - SERVER_HOST=0.0.0.0
+    - SERVER_PORT=9000
