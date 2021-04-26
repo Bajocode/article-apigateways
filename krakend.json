@@ -3,22 +3,6 @@
   "port": 8000,
   "endpoints": [
     {
-      "endpoint": "/hello/{name}",
-      "method": "GET",
-      "output_encoding": "string",
-      "backend": [
-        {
-          "url_pattern": "/hello/{name}",
-          "method": "GET",
-          "encoding": "string",
-          "sd": "static",
-          "host": [
-            "http://service:9000"
-          ]
-        }
-      ]
-    },
-    {
       "endpoint": "/auth/login",
       "method": "POST",
       "output_encoding": "json",
@@ -49,6 +33,33 @@
           "host": [
             "http://identity-service:9005"
           ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/cart",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "string",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {},
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "disable_host_sanitize": true,
+          "is_collection": false
         }
       ]
     }

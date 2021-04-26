@@ -3,38 +3,117 @@
   "port": 8000,
   "endpoints": [
     {
-      "endpoint": "/hello/{name}",
-      "method": "GET",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/hello/{name}",
+          "url_pattern": "/auth/login",
+          "encoding": "json",
           "sd": "static",
-          "method": "GET",
+          "method": "POST",
+          "extra_config": {},
           "host": [
-            "http://service:9000"
+            "http://identity-service:9005"
           ]
         }
       ]
     },
     {
-      "endpoint": "/private",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/auth/register",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "extra_config": {},
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/cart",
       "method": "GET",
+      "output_encoding": "no-op",
       "extra_config": {
         "github.com/devopsfaith/krakend-jose/validator": {
             "alg": "HS256",
-            "jwk-url": "http://service:9000/jwks.json",
+            "jwk-url": "http://identity-service:9005/jwks.json",
             "disable_jwk_security": true,
             "kid": "userid"
         }
       },
       "backend": [
         {
-          "url_pattern": "/private",
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
           "sd": "static",
           "method": "GET",
+          "extra_config": {},
           "host": [
-            "http://service:9000"
-          ]
+            "http://cart-service:9002"
+          ],
+          "disable_host_sanitize": true,
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/cart",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "PUT",
+          "extra_config": {},
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "disable_host_sanitize": true,
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/cart",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "DELETE",
+          "extra_config": {},
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "disable_host_sanitize": true,
+          "is_collection": false
         }
       ]
     }

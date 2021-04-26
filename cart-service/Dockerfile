@@ -3,4 +3,4 @@ WORKDIR /go/src/app
 COPY    ./src .
 RUN     ["go", "install"]
 RUN     ["go", "test", "-v"]
-CMD     ["payment-service"]
+CMD     ["cart-service"]

@@ -6,18 +6,25 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	"github.com/sirupsen/logrus"
-	"github.com/stripe/stripe-go/v71"
 )
 
 func main() {
-	var cfg Config
+	var (
+		cfg Config
+		s   Store
+	)
 
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	stripe.Key = cfg.StripeKey
-	h := new(Handler)
+	if cfg.LocalStore {
+		s = NewLocalStore()
+	} else {
+		s = NewRedisAdapter(&cfg)
+	}
+
+	h := NewHandler(NewRepository(s, cfg.RedisCartTTL))
 	l := logrus.New()
 
 	if cfg.AppEnv == "prod" {
@@ -30,6 +37,6 @@ func main() {
 		l.SetLevel(level)
 	}
 
-	http.Handle("/charge", LogMiddleware(l, ErrorHandler(h.HandleCharge, l)))
+	http.Handle("/", LogMiddleware(l, ErrorHandler(h.Route, l)))
 	l.Fatal(http.ListenAndServe(":"+cfg.ServerPort, nil))
 }

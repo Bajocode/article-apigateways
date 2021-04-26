@@ -14,23 +14,24 @@ services:
     build:
       context: ./identity-service
     ports:
-    - 9005:9005
+    - 9005
     environment:
     - SERVER_HOST=0.0.0.0
     - SERVER_PORT=9005
     - LOGGER_LEVEL=debug 
     - JWT_VALIDATION_ENABLED=false
     - JWT_PATHS_WHITELIST=/auth/register,/auth/login
-    - JWT_SECRET=verysecret
+    - JWT_SECRET=secret
     - JWT_EXP_SECS=86400
     - JWT_ALGO=HS256
 
-  service:
+  cart-service:
     build:
-      context: ./service
-    container_name: service
+      context: ./cart-service
     ports:
-    - 9000
+    - 9002
     environment:
     - SERVER_HOST=0.0.0.0
-    - SERVER_PORT=9000
+    - SERVER_PORT=9002
+    - LOCAL_STORE_ENABLED=true
+    - LOGGER_LEVEL=debug
