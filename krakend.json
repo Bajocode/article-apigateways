@@ -5,14 +5,20 @@
     {
       "endpoint": "/auth/login",
       "method": "POST",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-ratelimit/juju/router": {
+          "maxRate": 10,
+          "clientMaxRate": 5,
+          "strategy": "ip"
+        }
+      },
       "backend": [
         {
           "url_pattern": "/auth/login",
-          "encoding": "json",
+          "encoding": "no-op",
           "sd": "static",
           "method": "POST",
-          "extra_config": {},
           "host": [
             "http://identity-service:9005"
           ]
@@ -22,11 +28,11 @@
     {
       "endpoint": "/auth/register",
       "method": "POST",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
           "url_pattern": "/auth/register",
-          "encoding": "json",
+          "encoding": "no-op",
           "sd": "static",
           "method": "POST",
           "extra_config": {},
@@ -39,7 +45,7 @@
     {
       "endpoint": "/cart",
       "method": "GET",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "extra_config": {
         "github.com/devopsfaith/krakend-jose/validator": {
             "alg": "HS256",
@@ -51,10 +57,35 @@
       "backend": [
         {
           "url_pattern": "/{JWT.userid}/cart",
-          "encoding": "string",
+          "encoding": "no-op",
           "sd": "static",
           "method": "GET",
-          "extra_config": {},
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "disable_host_sanitize": true,
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/cart",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "PUT",
           "host": [
             "http://cart-service:9002"
           ],

@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cart-service.fullname" . }}
+  labels:
+    {{- include "cart-service.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "cart-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "cart-service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cart-service.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ .Values.image.repository }}
+          # image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.port }}
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     scheme: HTTP
+          #     path: {{ .Values.server.livenessPath }}
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     scheme: HTTP
+          #     path: {{ .Values.server.readinessPath }}
+          #     port: http
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: SERVER_HOST
+            value: {{ .Values.server.host }}
+          - name: SERVER_PORT
+            value: "{{ .Values.server.port }}"
+          - name: LOGGER_LEVEL
+            value: {{ .Values.server.loggerLevel }}
+          - name: LOCAL_STORE_ENABLED
+            value: "{{ .Values.server.localStoreEnabled }}"
+          - name: REDIS_HOST
+            value: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}"
+          - name: REDIS_PORT
+            value: "{{ .Values.server.redis.port }}"
+          - name: REDIS_PW
+            value: {{ .Values.server.redis.pw }}
+          - name: REDIS_CART_TTL
+            value: {{ .Values.server.redis.cartTtl }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

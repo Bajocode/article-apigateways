@@ -1,0 +1,32 @@
+---
+apiVersion: skaffold/v2beta7
+kind: Config
+build:
+  artifacts:
+  - image: cart-service
+    context: ./cart-service
+  - image: identity-service
+    context: ./identity-service
+
+deploy:
+  helm:
+    releases:
+    - name: cart-service
+      chartPath: ./kubernetes/cart-service
+      valuesFiles:
+      - ./kubernetes/cart-service/values.yaml
+      artifactOverrides:
+        image.repository: cart-service
+      version: 0.1.0
+    - name: identity-service
+      chartPath: ./kubernetes/identity-service
+      valuesFiles:
+      - ./kubernetes/identity-service/values.yaml
+      artifactOverrides:
+        image.repository: identity-service
+      version: 0.1.0
+    - name: gateway
+      chartPath: ./kubernetes/gateway
+      valuesFiles:
+      - ./kubernetes/gateway/values.yaml
+      version: 0.1.0
