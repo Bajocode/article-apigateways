@@ -1,6 +1,7 @@
-package main
+package cart
 
 import (
+	"cart-service/store"
 	"context"
 	"encoding/json"
 	"io/ioutil"
@@ -18,7 +19,7 @@ type want struct {
 }
 type prep struct {
 	userID string
-	cart   *Cart
+	c      *cart
 }
 type testCase struct {
 	name   string
@@ -109,8 +110,8 @@ func TestHandler(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			req := httptest.NewRequest(tc.method, tc.path, strings.NewReader(tc.body))
 			recorder := httptest.NewRecorder()
-			s := NewLocalStore()
-			enc, _ := json.Marshal(tc.prep.cart)
+			s := store.NewLocalStore()
+			enc, _ := json.Marshal(tc.prep.c)
 			s.Set(context.TODO(), tc.prep.userID, enc)
 			l := logrus.New()
 			l.SetOutput(ioutil.Discard)
@@ -128,8 +129,8 @@ func TestHandler(t *testing.T) {
 	}
 }
 
-func newCartMock() *Cart {
-	return &Cart{[]CartItem{
+func newCartMock() *cart {
+	return &cart{[]cartItem{
 		{
 			ProductID: "94e8d5de-2192-4419-b824-ccbe7b21fa6f",
 			Price:     200,

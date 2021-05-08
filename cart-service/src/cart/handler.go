@@ -1,4 +1,4 @@
-package main
+package cart
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"cart-service/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -38,7 +39,7 @@ func ErrorHandler(h handlerFunc, logger *logrus.Logger) http.Handler {
 
 		logger.Errorf("Error: %v", err)
 
-		clientErr, ok := err.(ClientError)
+		clientErr, ok := err.(util.ClientError)
 		if !ok {
 			res.WriteHeader(500)
 			return
@@ -64,7 +65,7 @@ func (h *Handler) Route(res http.ResponseWriter, req *http.Request) error {
 	userID = extractUserID(req)
 
 	if len(userID) == 0 {
-		return NewHTTPError(nil, http.StatusBadRequest, "Bad request: no userID")
+		return util.NewHTTPError(nil, http.StatusBadRequest, "Bad request: no userID")
 	}
 
 	switch req.Method {
@@ -75,13 +76,13 @@ func (h *Handler) Route(res http.ResponseWriter, req *http.Request) error {
 	case http.MethodDelete:
 		return h.handleDel(res, req)
 	}
-	return NewHTTPError(nil, http.StatusNotImplemented, "Bad request: not implemented")
+	return util.NewHTTPError(nil, http.StatusNotImplemented, "Bad request: not implemented")
 }
 
 func (h *Handler) handleGet(res http.ResponseWriter, req *http.Request) error {
 	cart, err := h.repo.Get(req.Context(), userID)
 	if err != nil {
-		return NewHTTPError(err, http.StatusBadRequest, "Bad request: cart not found")
+		return util.NewHTTPError(err, http.StatusBadRequest, "Bad request: cart not found")
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -94,10 +95,10 @@ func (h *Handler) handleGet(res http.ResponseWriter, req *http.Request) error {
 }
 
 func (h *Handler) handlePut(res http.ResponseWriter, req *http.Request) error {
-	var payload Cart
+	var payload cart
 
 	if err := json.NewDecoder(req.Body).Decode(&payload); err != nil {
-		return NewHTTPError(err, http.StatusBadRequest, "Bad request: invalid JSON")
+		return util.NewHTTPError(err, http.StatusBadRequest, "Bad request: invalid JSON")
 	}
 
 	cart, err := h.repo.Update(req.Context(), userID, payload)

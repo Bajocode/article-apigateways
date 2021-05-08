@@ -1,34 +1,35 @@
-package main
+package cart
 
 import (
+	"cart-service/store"
 	"context"
 	"encoding/json"
 	"time"
 )
 
 type Repository struct {
-	store Store
+	store store.Store
 	ttl   time.Duration
 }
 
-func NewRepository(store Store, ttl time.Duration) *Repository {
+func NewRepository(store store.Store, ttl time.Duration) *Repository {
 	return &Repository{store, ttl}
 }
 
-func (r *Repository) Get(ctx context.Context, userID string) (*Cart, error) {
+func (r *Repository) Get(ctx context.Context, userID string) (*cart, error) {
 	var (
-		cart *Cart
-		enc  []byte
-		err  error
+		c   *cart
+		enc []byte
+		err error
 	)
 	if enc, err = r.store.Get(ctx, userID); err != nil {
-		return r.Update(ctx, userID, Cart{[]CartItem{}})
+		return r.Update(ctx, userID, cart{[]cartItem{}})
 	}
-	err = json.Unmarshal(enc, &cart)
-	return cart, err
+	err = json.Unmarshal(enc, &c)
+	return c, err
 }
 
-func (r *Repository) Update(ctx context.Context, userID string, cart Cart) (*Cart, error) {
+func (r *Repository) Update(ctx context.Context, userID string, cart cart) (*cart, error) {
 	var (
 		enc []byte
 		err error
