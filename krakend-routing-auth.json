@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "port": 8000,
+  "sd": "static",
+  "output_encoding": "no-op",
+  "endpoints": [
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/auth/login",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/auth/register",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/users",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/users",
+          "encoding": "no-op",
+          "method": "GET",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    }
+  ]
+}
+

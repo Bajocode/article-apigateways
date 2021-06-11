@@ -54,7 +54,7 @@ func TestHandler(t *testing.T) {
 			method: http.MethodGet,
 			body:   "",
 			prep:   &prep{},
-			want:   &want{http.StatusBadRequest, `{"message":"Bad request: no userID"}`},
+			want:   &want{http.StatusBadRequest, `{"message":"Bad request: invalid userID"}`},
 		},
 		{
 			name:   "PUT filled cart",
@@ -116,7 +116,7 @@ func TestHandler(t *testing.T) {
 			l := logrus.New()
 			l.SetOutput(ioutil.Discard)
 
-			sut := NewHandler(NewRepository(s, 1))
+			sut := NewHandler(NewRepository(&s, 1))
 			ErrorHandler(sut.Route, l).ServeHTTP(recorder, req)
 
 			if recorder.Code != tc.want.status {

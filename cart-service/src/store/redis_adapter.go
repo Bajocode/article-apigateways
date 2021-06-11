@@ -9,7 +9,8 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func NewRedisAdapter(config *util.Config) Store {
+// NewRedisAdapter constructs a redis adapted store
+func NewRedisAdapter(config util.Config) Store {
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.RedisHost + ":" + config.RedisPort,
 		Password: config.RedisPW,

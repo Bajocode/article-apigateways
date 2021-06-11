@@ -11,22 +11,22 @@ build:
 deploy:
   helm:
     releases:
-    - name: cart-service
-      chartPath: ./kubernetes/cart-service
+    - name: gateway
+      chartPath: ./kubernetes-helmcharts/gateway
       valuesFiles:
-      - ./kubernetes/cart-service/values.yaml
+      - ./kubernetes-helmcharts/gateway/values.yaml
+      version: 0.1.0
+    - name: cart-service
+      chartPath: ./kubernetes-helmcharts/cart-service
+      valuesFiles:
+      - ./kubernetes-helmcharts/cart-service/values.yaml
       artifactOverrides:
         image.repository: cart-service
       version: 0.1.0
     - name: identity-service
-      chartPath: ./kubernetes/identity-service
+      chartPath: ./kubernetes-helmcharts/identity-service
       valuesFiles:
-      - ./kubernetes/identity-service/values.yaml
+      - ./kubernetes-helmcharts/identity-service/values.yaml
       artifactOverrides:
         image.repository: identity-service
-      version: 0.1.0
-    - name: gateway
-      chartPath: ./kubernetes/gateway
-      valuesFiles:
-      - ./kubernetes/gateway/values.yaml
       version: 0.1.0

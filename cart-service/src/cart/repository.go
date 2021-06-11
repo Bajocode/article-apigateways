@@ -7,15 +7,18 @@ import (
 	"time"
 )
 
+// Repository is a cart storage mediator that communicates with a store
 type Repository struct {
 	store store.Store
 	ttl   time.Duration
 }
 
-func NewRepository(store store.Store, ttl time.Duration) *Repository {
-	return &Repository{store, ttl}
+// NewRepository constructs a repository
+func NewRepository(store *store.Store, ttl time.Duration) *Repository {
+	return &Repository{*store, ttl}
 }
 
+// Get handles cart http GET requests
 func (r *Repository) Get(ctx context.Context, userID string) (*cart, error) {
 	var (
 		c   *cart
@@ -29,6 +32,7 @@ func (r *Repository) Get(ctx context.Context, userID string) (*cart, error) {
 	return c, err
 }
 
+// Update handles cart http PUT requests
 func (r *Repository) Update(ctx context.Context, userID string, cart cart) (*cart, error) {
 	var (
 		enc []byte
@@ -44,6 +48,7 @@ func (r *Repository) Update(ctx context.Context, userID string, cart cart) (*car
 	return r.Get(ctx, userID)
 }
 
+// Delete handles cart http DELETE requests
 func (r *Repository) Delete(ctx context.Context, userID string) error {
 	return r.store.Del(ctx, userID)
 }

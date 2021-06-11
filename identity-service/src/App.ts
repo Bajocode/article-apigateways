@@ -7,6 +7,7 @@ import {Logger} from 'winston';
 import Config from './Config';
 import authMiddleware from './middleware/authMiddleware';
 import errorMiddleware from './middleware/errorMiddleware';
+import traceMiddleware from './middleware/traceMiddleware';
 import logMiddleware from './middleware/logMiddleware';
 import Routing from './Routing';
 
@@ -35,9 +36,9 @@ export default class App {
         });
 
     process.on('SIGTERM', () => {
-      this.logger.debug('SIGTERM signal received: closing HTTP server');
+      this.logger.debug('Graceful shutdown...');
       server.close(() => {
-        this.logger.debug('HTTP server closed');
+        this.logger.debug('Server stopped');
       });
     });
   }
@@ -53,8 +54,9 @@ export default class App {
     }
     this.app.use(express.json());
     this.app.use(express.urlencoded({extended: true}));
-    this.app.use(authMiddleware(this.config));
+    this.app.use(traceMiddleware());
     this.app.use(logMiddleware(this.logger));
+    this.app.use(authMiddleware(this.config));
     this.app.use(express.static(path.join(__dirname, 'static')));
   }
 
