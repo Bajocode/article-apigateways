@@ -10,7 +10,7 @@ RUN         addgroup "${USER}" --gid "${GUID}" &&\
               --disabled-password
 USER        docker
 WORKDIR     /home/docker
-COPY        --chown=docker:docker src/go* .
+COPY        --chown=docker:docker src/go* ./
 RUN         go mod download
 COPY        --chown=docker:docker src .
 RUN         CGO_ENABLED=0 go test ./... -v

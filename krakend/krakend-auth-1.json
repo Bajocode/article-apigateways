@@ -5,13 +5,36 @@
   "output_encoding": "no-op",
   "endpoints": [
     {
+      "endpoint": "/users",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/users",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+    {
       "endpoint": "/auth/login",
       "method": "POST",
       "backend": [
         {
           "url_pattern": "/auth/login",
           "encoding": "no-op",
-          "sd": "static",
           "method": "POST",
           "host": [
             "http://identity-service:9005"
@@ -26,22 +49,7 @@
         {
           "url_pattern": "/auth/register",
           "encoding": "no-op",
-          "sd": "static",
           "method": "POST",
-          "host": [
-            "http://identity-service:9005"
-          ]
-        }
-      ]
-    },
-    {
-      "endpoint": "/users",
-      "method": "GET",
-      "backend": [
-        {
-          "url_pattern": "/users",
-          "encoding": "no-op",
-          "method": "GET",
           "host": [
             "http://identity-service:9005"
           ]

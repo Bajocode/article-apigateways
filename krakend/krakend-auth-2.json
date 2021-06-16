@@ -1,0 +1,108 @@
+{
+  "version": 2,
+  "port": 8000,
+  "sd": "static",
+  "output_encoding": "no-op",
+  "endpoints": [
+    {
+      "endpoint": "/users",
+      "method": "GET",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/users",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/auth/login",
+          "encoding": "no-op",
+          "method": "POST",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/auth/register",
+          "encoding": "no-op",
+          "method": "POST",
+          "host": [
+            "http://identity-service:9005"
+          ]
+        }
+      ]
+    },
+        {
+      "endpoint": "/cart",
+      "method": "GET",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/cart",
+      "method": "PUT",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "is_collection": false
+        }
+      ]
+    }
+  ]
+}
+

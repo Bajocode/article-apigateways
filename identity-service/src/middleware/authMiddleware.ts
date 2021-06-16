@@ -11,10 +11,10 @@ export default function authMiddleware(config: Config) {
     if (!config.jwtValidationEnabled) return next();
     if (config.jwtPathsWhitelist.includes(req.path)) return next();
 
-    const authHeader = req.get('Authorization');
+    const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      next(new HttpException(401, 'No Authentication header'));
+      next(new HttpException(401, 'No Authorization header'));
       return;
     }
 
