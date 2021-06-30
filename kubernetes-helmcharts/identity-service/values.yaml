@@ -61,7 +61,7 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 5
-  # targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
@@ -73,16 +73,20 @@ server:
   nodeEnv: production
   host: "0.0.0.0"
   port: 9005
+  readTimeout: 10000 # milliseconds
+  idleTimeout: 15000 # milliseconds
   loggerLevel: info
+  livenessPath: /status/healthz
+  readinessPath: /status/readyz
+  jwt:
+    expirySecs: 3600
+    validationEnabled: true
+    pathsWhitelist: /auth/register,/auth/login,/status/healthz,/status/readyz
   postgresql:
     port: 5432
     user: postgres
     pw: admin
     db: identity-service
-  livenessPath: /status/healthz
-  readinessPath: /status/readyz
-  jwt:
-    expirySecs: 3600
 
 postgresql:
   enabled: false

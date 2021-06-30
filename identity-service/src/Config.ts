@@ -19,6 +19,12 @@ export default class Config {
   public get serverPort(): number {
     return Number(this.env.SERVER_PORT);
   }
+  public get serverReadTimeout(): number {
+    return Number(this.env.SERVER_READ_TIMEOUT);
+  }
+  public get serverIdleTimeout(): number {
+    return Number(this.env.SERVER_IDLE_TIMEOUT);
+  }
   public get jwtValidationEnabled(): boolean {
     return Boolean(this.env.JWT_VALIDATION_ENABLED);
   }
@@ -61,6 +67,12 @@ export default class Config {
       }),
       SERVER_PORT: port({
         default: 9005,
+      }),
+      SERVER_READ_TIMEOUT: num({
+        default: 10000,
+      }),
+      SERVER_IDLE_TIMEOUT: num({
+        default: 15000,
       }),
       JWT_VALIDATION_ENABLED: bool({
         default: false,

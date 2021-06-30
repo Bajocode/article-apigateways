@@ -1,6 +1,7 @@
 {
   "version": 2,
   "port": 8000,
+  "sd": "static",
   "output_encoding": "no-op",
   "endpoints": [
     {
@@ -10,7 +11,7 @@
       "extra_config": {
         "github.com/devopsfaith/krakend-jose/validator": {
           "alg": "HS256",
-          "jwk-url": "http://identity-service.default/jwks.json",
+          "jwk-url": "http://identity-service:9005/jwks.json",
           "disable_jwk_security": true,
           "kid": "userid"
         }
@@ -19,10 +20,10 @@
         {
           "url_pattern": "/{JWT.userid}/cart",
           "encoding": "no-op",
-          "sd": "dns",
+          "sd": "static",
           "method": "PUT",
           "host": [
-            "cart-service.default"
+            "http://cart-service:9002"
           ],
           "disable_host_sanitize": true,
           "is_collection": false
@@ -36,7 +37,7 @@
       "extra_config": {
         "github.com/devopsfaith/krakend-jose/validator": {
             "alg": "HS256",
-            "jwk-url": "http://identity-service.default/jwks.json",
+            "jwk-url": "http://identity-service:9005/jwks.json",
             "disable_jwk_security": true,
             "kid": "userid"
         }
@@ -45,10 +46,10 @@
         {
           "url_pattern": "/users",
           "encoding": "no-op",
-          "sd": "dns",
+          "sd": "static",
           "method": "GET",
           "host": [
-            "identity-service.default"
+            "http://identity-service:9005"
           ]
         }
       ]
@@ -56,7 +57,6 @@
     {
       "endpoint": "/auth/register",
       "method": "POST",
-      "output_encoding": "no-op",
       "extra_config": {
         "github.com/devopsfaith/krakend-ratelimit/juju/router": {
           "maxRate": 100,
@@ -76,19 +76,16 @@
         {
           "url_pattern": "/auth/register",
           "encoding": "no-op",
-          "sd": "dns",
           "method": "POST",
           "host": [
-            "identity-service.default"
-          ],
-          "disable_host_sanitize": true
+            "http://identity-service:9005"
+          ]
         }
       ]
     },
     {
       "endpoint": "/auth/login",
       "method": "POST",
-      "output_encoding": "no-op",
       "extra_config": {
         "github.com/devopsfaith/krakend-ratelimit/juju/router": {
           "maxRate": 10,
@@ -101,11 +98,9 @@
           "url_pattern": "/auth/login",
           "encoding": "no-op",
           "method": "POST",
-          "sd": "dns",
           "host": [
-            "identity-service.default"
-          ],
-          "disable_host_sanitize": true
+            "http://identity-service:9005"
+          ]
         }
       ]
     }

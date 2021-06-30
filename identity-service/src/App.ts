@@ -34,6 +34,8 @@ export default class App {
               `node pid${process.pid} @ ${addr.address}:${addr.port}`,
           );
         });
+    server.keepAliveTimeout = this.config.serverReadTimeout;
+    server.requestTimeout = this.config.serverIdleTimeout;
 
     process.on('SIGTERM', () => {
       this.logger.debug('Graceful shutdown...');
