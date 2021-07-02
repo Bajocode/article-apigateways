@@ -19,10 +19,10 @@ services:
     - SERVER_HOST=0.0.0.0
     - SERVER_PORT=9005
     - LOGGER_LEVEL=debug 
-    - SERVER_READ_TIMEOUT=5s
-    - SERVER_IDLE_TIMEOUT=15s
+    - SERVER_READ_TIMEOUT=5000
+    - SERVER_IDLE_TIMEOUT=15000
     - JWT_VALIDATION_ENABLED=false # don't forget!
-    - JWT_PATHS_WHITELIST=/auth/register,/auth/login
+    - JWT_PATHS_WHITELIST=/auth/register,/auth/login,/jwks.json
     - JWT_SECRET=secret
     - JWT_EXP_SECS=86400
     - JWT_ALGO=HS256

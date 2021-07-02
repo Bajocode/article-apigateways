@@ -112,14 +112,14 @@
 curl 'http://0.0.0.0:8000/auth/register' \
   --request "POST" \
   --header "Content-type: application/json" \
-  --data '{"email": "somebody@nobody.com", "passwor": "mpassword"}' \
+  --data '{"email": "some@bo.dy", "passwor": "mpassword"}' \
 
 400 Bad Request
 
 curl 'http://0.0.0.0:8000/auth/register' \
   --request "POST" \
   --header "Content-type: application/json" \
-  --data '{"email": "somebody@nobody.com", "password": "mpassword"}' \
+  --data '{"email": "some@bo.dy", "password": "mpassword"}' \
 ```
 
 ## Regulation
@@ -228,7 +228,7 @@ curl 'http://0.0.0.0:8000/auth/register' \
 for i in {1..100}; do curl \
   --request "POST" \
   --header "Content-type: application/json" \
-  --data '{"email": "somebody@nobody.com", "password": "mpassword"}' \
+  --data '{"email": "some@bo.dy", "password": "mpassword"}' \
   'http://0.0.0.0:8000/auth/login'; done
 ```
 
@@ -310,7 +310,7 @@ docker compose down && docker compose up
 [
 	{
         "id":"f06b084b-9d67-4b01-926b-f90c6246eed9",
-		"email":"somebody@nobody.com"
+		"email":"some@bo.dy"
 	}
 ]
 
@@ -325,32 +325,6 @@ docker compose down && docker compose up
   "sd": "static",
   "output_encoding": "no-op",
   "endpoints": [
-    {
-      "endpoint": "/cart",
-      "method": "PUT",
-      "output_encoding": "no-op",
-      "extra_config": {
-        "github.com/devopsfaith/krakend-jose/validator": {
-            "alg": "HS256",
-            "jwk-url": "http://identity-service:9005/jwks.json",
-            "disable_jwk_security": true,
-            "kid": "userid"
-        }
-      },
-      "backend": [
-        {
-          "url_pattern": "/{JWT.userid}/cart",
-          "encoding": "no-op",
-          "sd": "static",
-          "method": "PUT",
-          "host": [
-            "http://cart-service:9002"
-          ],
-          "disable_host_sanitize": true,
-          "is_collection": false
-        }
-      ]
-    },
     {
       "endpoint": "/users",
       "method": "GET",
@@ -402,7 +376,33 @@ docker compose down && docker compose up
           ]
         }
       ]
-    }
+    },
+    {
+      "endpoint": "/cart",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+            "alg": "HS256",
+            "jwk-url": "http://identity-service:9005/jwks.json",
+            "disable_jwk_security": true,
+            "kid": "userid"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/{JWT.userid}/cart",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "PUT",
+          "host": [
+            "http://cart-service:9002"
+          ],
+          "disable_host_sanitize": true,
+          "is_collection": false
+        }
+      ]
+    },
   ]
 }
 
@@ -410,9 +410,23 @@ curl 'http://0.0.0.0:8000/cart' \
   --request "PUT" \
   --header "Content-type: application/json" \
   --header "authorization: Bearer ${TOKEN}" \
-  --data '{"items": [{"productid": "94e8d5de-2192-4419-b824-ccbe7b21fa6f", "quantity": 2, "price": 200}]}'
+  --data '{"items": [
+            {
+              "productid": "94e8d5de-2192-4419-b824-ccbe7b21fa6f",
+              "quantity": 2,
+              "price": 200
+            }
+          ]}'
 
-{"items":[{"productid":"94e8d5de-2192-4419-b824-ccbe7b21fa6f","quantity":2,"price":200}]}
+{
+	"items": [
+		{
+			"productid":"94e8d5de-2192-4419-b824-ccbe7b21fa6f",
+			"quantity":2,
+			"price":200
+		}
+	]
+}
 ```
 
 ## Routing
@@ -423,7 +437,6 @@ curl 'http://0.0.0.0:8000/cart' \
 {
   "version": 2,
   "port": 8000,
-  "sd": "static",
   "output_encoding": "no-op",
   "endpoints": [
     {
@@ -433,6 +446,7 @@ curl 'http://0.0.0.0:8000/cart' \
         {
           "url_pattern": "/users",
           "encoding": "no-op",
+          "sd": "static",
           "method": "GET",
           "host": [
             "http://identity-service:9005"
@@ -444,14 +458,23 @@ curl 'http://0.0.0.0:8000/cart' \
 }
 
 # curl
-curl \
-  --request "GET" \
-  'http://0.0.0.0:8000/users'
+curl http://0.0.0.0:8000/users \
+  --request GET \
+  --verbose
+  
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+Content-Length: 50
+Content-Type: application/json; charset=utf-8
+Date: Wed, 30 Jun 2021 10:53:07 GMT
+Etag: W/"32-8unx1IJijVTaDKIE5jl2TO9j8kc"
+Keep-Alive: timeout=5
+X-Krakend: Version 1.2.0
+X-Krakend-Completed: false
+X-Powered-By: Express
+X-Request-Id: 1625050387563
 
-{
-  "status": 401,
-  "message": "No Authentication header"
-}
+{"status":401,"message":"No Authorization header"}
 ```
 
 ### `Users with auth`
@@ -464,7 +487,6 @@ curl \
 {
   "version": 2,
   "port": 8000,
-  "sd": "static",
   "output_encoding": "no-op",
   "endpoints": [
     {
@@ -522,7 +544,10 @@ docker compose restart gateway
 curl 'http://0.0.0.0:8000/auth/register' \
   --request "POST" \
   --header "Content-type: application/json" \
-  --data '{"email": "somebody@nobody.com", "password": "mypassword"}' \
+  --data '{
+  					"email": "some@bo.dy",
+  					"password": "pass"
+  				}' 
   
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InVzZXJ...",
@@ -532,7 +557,7 @@ curl 'http://0.0.0.0:8000/auth/register' \
 curl 'http://0.0.0.0:8000/auth/login' \
   --request "POST" \
   --header "Content-type: application/json" \
-  --data '{"email": "somebody@nobody.com", "password": "mypassword"}' \
+  --data '{"email": "some@bo.dy", "password": "pass"}' \
 
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InVzZXJ...",
@@ -550,11 +575,10 @@ curl 'http://0.0.0.0:8000/auth/login' \
 [
 	{
         "id":"f06b084b-9d67-4b01-926b-f90c6246eed9",
-		"email":"somebody@nobody.com"
+		"email":"some@bo.dy"
 	}
 ]
 ```
-
 
 
 
