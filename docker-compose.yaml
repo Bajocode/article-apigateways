@@ -6,11 +6,11 @@ services:
     image: devopsfaith/krakend:1.2
     container_name: gateway
     ports:
-    - 8000:8000
+    - 8080:8080
     volumes:
     - ./krakend.yaml:/etc/krakend/krakend.yaml
     entrypoint: [ "/usr/bin/krakend" ]
-    command: [ "run", "--debug", "--config", "/etc/krakend/krakend.yaml", "--port", "8000" ]
+    command: [ "run", "--debug", "--config", "/etc/krakend/krakend.yaml", "--port", "8080" ]
   
   identity-service:
     build:
@@ -23,7 +23,7 @@ services:
     - LOGGER_LEVEL=debug 
     - SERVER_READ_TIMEOUT=5000
     - SERVER_IDLE_TIMEOUT=15000
-    - JWT_VALIDATION_ENABLED=true # disable if krakend handles auth!
+    - JWT_VALIDATION_ENABLED=false # disable if krakend handles auth!
     - JWT_PATHS_WHITELIST=/auth/register,/auth/login,/jwks.json
     - JWT_SECRET=secret
     - JWT_EXP_SECS=86400

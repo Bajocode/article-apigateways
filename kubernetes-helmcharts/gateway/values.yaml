@@ -41,7 +41,7 @@ tolerations: []
 affinity: {}
 
 server:
-  port: 8000
+  port: 8080
   manifest:
     name: krakend.yaml
     dir: /etc/krakend
