@@ -78,7 +78,7 @@ export default class Config {
         default: false,
       }),
       JWT_PATHS_WHITELIST: str({
-        default: '',
+        default: '/auth/register,/auth/login,/jwks.json',
       }),
       JWT_SECRET: str({
         default: 'secret',

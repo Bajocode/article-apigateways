@@ -36,6 +36,7 @@ export default class AuthRepository {
   }
 
   private signed(user: User): Token {
+    // Create copy of user, otherwise password of stored is deleted
     const dto = {...user};
     delete dto.password;
     const payload = {userid: user.id, dto};

@@ -30,3 +30,10 @@ deploy:
       artifactOverrides:
         image.repository: identity-service
       version: 0.1.0
+
+portForward:
+- resourceType: deployment
+  resourceName: gateway
+  port: 8080
+  localPort: 8080
+  # namespace: default

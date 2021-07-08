@@ -31,23 +31,17 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/usr/bin/krakend" ]
+          args: [ "run", "-d", "-c", "{{ .Values.server.manifest.dir }}/{{ .Values.server.manifest.name }}" ]          
           ports:
             - name: http
               containerPort: {{ .Values.server.port }}
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: config
-              mountPath: /etc/krakend/
+              mountPath: {{ .Values.server.manifest.dir }}/
       volumes:
         - name: config
           configMap:
