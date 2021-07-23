@@ -57,5 +57,5 @@ docker compose up
 
 2. Destroy (optional)
 ```sh
-docker-compose down --rmi all
+docker compose down --rmi all
 ```
