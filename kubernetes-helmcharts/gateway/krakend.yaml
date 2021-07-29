@@ -8,16 +8,17 @@ endpoints:
   extra_config:
     github.com/devopsfaith/krakend-jose/validator:
       alg: HS256
-      jwk-url: http://identity-service:9005/jwks.json
+      jwk-url: http://identity-service.default/jwks.json
       disable_jwk_security: true
       kid: userid
   backend:
   - url_pattern: /users
     encoding: no-op
-    sd: static
+    sd: dns
     method: GET
     host:
-    - http://identity-service:9005
+    - identity-service.default
+    disable_host_sanitize: true # required for Kubernetes
 
 - endpoint: /auth/register
   method: POST
@@ -40,10 +41,11 @@ endpoints:
   backend:
   - url_pattern: /auth/register
     encoding: no-op
-    sd: static
+    sd: dns
     method: POST
     host:
-    - http://identity-service:9005
+    - identity-service.default
+    disable_host_sanitize: true # required for Kubernetes
 
 - endpoint: /auth/login
   method: POST
@@ -51,10 +53,11 @@ endpoints:
   backend:
   - url_pattern: /auth/login
     encoding: no-op
-    sd: static
+    sd: dns
     method: POST
     host:
-    - http://identity-service:9005
+    - identity-service.default
+    disable_host_sanitize: true # required for Kubernetes
 
 - endpoint: /cart
   method: PUT
@@ -62,13 +65,15 @@ endpoints:
   extra_config:
     github.com/devopsfaith/krakend-jose/validator:
       alg: HS256
-      jwk-url: http://identity-service:9005/jwks.json
+      jwk-url: http://identity-service.default/jwks.json
       disable_jwk_security: true
       kid: userid
   backend:
   - url_pattern: /{JWT.userid}/cart
     encoding: no-op
-    sd: static
+    sd: dns
     method: PUT
     host:
-    - http://cart-service:9002
+    - cart-service.default
+    disable_host_sanitize: true # required for Kubernetes 
+
