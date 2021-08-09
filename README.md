@@ -1,5 +1,5 @@
 # API Gateways Article Code
-Example code from the ["API Gateways: Maintainability in the Face of API Complexity"](https://fabijan-bajo.medium.com/) article.
+Example code from the ["API Gateways: Maintainability in the Face of API Complexity"](https://betterprogramming.pub/maintainability-in-the-face-of-api-complexity-e23531e2d322) article.
 
 ![authentication flow](./media/architecture-flow.png)
 
